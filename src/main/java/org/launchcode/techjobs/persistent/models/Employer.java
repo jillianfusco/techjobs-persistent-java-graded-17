@@ -16,8 +16,8 @@ public class Employer extends AbstractEntity {
     @Size(min = 1, max = 100, message = "Location must be between 1 and 100 characters.")
     String location;
 
-    @OneToMany(mappedBy = "employer")
-    @JoinColumn(name = "employer") // specifies the name of the foreign key column in Job table.
+    @OneToMany
+    @JoinColumn(name = "employer_id") // specifies the name of the foreign key column in Job table.
     private List<Job> jobs = new ArrayList<>(); //represent the list of all items in a given job
 
     public Employer() {}
