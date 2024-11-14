@@ -8,3 +8,8 @@ DROP TABLE job;
 
 
 --Part 4
+SELECT *
+FROM skill
+INNER JOIN job_skill ON skill.id = job_skill.skill_id
+ORDER BY skill.name ASC;
+
