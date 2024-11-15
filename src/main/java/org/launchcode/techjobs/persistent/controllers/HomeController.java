@@ -54,14 +54,21 @@ public class HomeController {
                                     @RequestParam int employerId,
                                     @RequestParam List<Integer> skills) {
 
+        //some things don't belong here
+        //give value to an employer object, skill list object, and save
+        //1. Check for error handling
+        //2. Set the employer object to the job using the employerId.
+        //3.set the skills to the job
+        //4. Save job (edited)
+
         if (errors.hasErrors()) {
-            System.out.println("Validation errors detected, returning early.");
             model.addAttribute("title", "Add Job");
             model.addAttribute("employers", employerRepository.findAll());
             model.addAttribute("skills", skillRepository.findAll());
             return "add";
         }
 
+        //query database for employer only if no validation errors
         Optional<Employer> result = employerRepository.findById(employerId);
         if (result.isEmpty()) {
             model.addAttribute("title", "Add Job");
@@ -69,14 +76,19 @@ public class HomeController {
             model.addAttribute("errorMsg", "Invalid employer selected.");
             return "add";
         }
-
         // find and set the employer
-        Employer employer = employerRepository.findById(employerId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid employer ID: " + employerId));
+        Employer employer = result.get();
         newJob.setEmployer(employer);
 
-        // find and set the skills from book directions
+        //query database for skills only if no validation errors
         List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
+        if (skillObjs.isEmpty()) {
+            model.addAttribute("title", "Add Job");
+            model.addAttribute("employers", employerRepository.findAll());
+            model.addAttribute("skills", skillRepository.findAll());
+            model.addAttribute("errorMsg", "No valid skills selected.");
+            return "add";
+        }
         newJob.setSkills(skillObjs);
 
         // save the new job
@@ -88,7 +100,19 @@ public class HomeController {
     @GetMapping("view/{jobId}")
     public String displayViewJob(Model model, @PathVariable int jobId) {
 
-            return "view";
+        //handle the job object
+        Optional<Job> jobResult = jobRepository.findById(jobId);
+
+        if (jobResult.isEmpty()) {
+            model.addAttribute("errorMsg", "Job not found. Please check the job ID.");
+            return "error";
+        }
+
+        //add job to the model and display the view page
+        Job job = jobResult.get();
+        model.addAttribute("job", job);
+
+        return "view";
     }
 
 }
