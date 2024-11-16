@@ -32,7 +32,7 @@ public class HomeController {
     @Autowired
     private JobRepository jobRepository;
 
-    @RequestMapping("/")
+    @RequestMapping("")
     public String index(Model model) {
         model.addAttribute("title", "MyJobs");
         return "index";
@@ -65,7 +65,7 @@ public class HomeController {
         List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
         newJob.setSkills(skillObjs);
 
-        //query database for employer with findbyid, use optional to handle if none is found, if exists retreive using get() and set on job obj
+        //query database for employer with findbyid, use optional to handle if none is found, if exists retrieve using get() and set on job obj
         Optional<Employer> optionalEmployer = employerRepository.findById(employerId);
         if (optionalEmployer.isPresent()) {
             Employer employer = optionalEmployer.get();
@@ -78,22 +78,21 @@ public class HomeController {
         return "redirect:";
     }
 
+    //lives at /view/#
     @GetMapping("view/{jobId}")
     public String displayViewJob(Model model, @PathVariable int jobId) {
+        Optional<Job> optJob = jobRepository.findById(jobId);
 
-        //handle the job object
-        Optional<Job> jobResult = jobRepository.findById(jobId);
-
-        if (jobResult.isEmpty()) {
-            model.addAttribute("errorMsg", "Job not found. Please check the job ID.");
+        if (optJob.isPresent()) {
+            Job job = optJob.get();
+            model.addAttribute("job", job);
+            return "view"; // Render the view.html template
+        } else {
+            System.out.println("Job not found: ID " + jobId);
             return "view";
+
         }
 
-        //add job to the model and display the view page
-        Job job = jobResult.get();
-        model.addAttribute("job", job);
-
-        return "view";
     }
 
 }
