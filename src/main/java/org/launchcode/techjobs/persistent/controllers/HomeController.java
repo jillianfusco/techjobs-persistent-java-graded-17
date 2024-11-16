@@ -54,13 +54,6 @@ public class HomeController {
                                     @RequestParam int employerId,
                                     @RequestParam List<Integer> skills) {
 
-        //some things don't belong here
-        //give value to an employer object, skill list object, and save
-        //1. Check for error handling
-        //2. Set the employer object to the job using the employerId.
-        //3.set the skills to the job
-        //4. Save job (edited)
-
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Job");
             model.addAttribute("employers", employerRepository.findAll());
@@ -68,28 +61,16 @@ public class HomeController {
             return "add";
         }
 
-        //query database for employer only if no validation errors
-        Optional<Employer> result = employerRepository.findById(employerId);
-        if (result.isEmpty()) {
-            model.addAttribute("title", "Add Job");
-            model.addAttribute("employers", employerRepository.findAll());
-            model.addAttribute("errorMsg", "Invalid employer selected.");
-            return "add";
-        }
-        // find and set the employer
-        Employer employer = result.get();
-        newJob.setEmployer(employer);
-
-        //query database for skills only if no validation errors
+        //from textbook directions
         List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
-        if (skillObjs.isEmpty()) {
-            model.addAttribute("title", "Add Job");
-            model.addAttribute("employers", employerRepository.findAll());
-            model.addAttribute("skills", skillRepository.findAll());
-            model.addAttribute("errorMsg", "No valid skills selected.");
-            return "add";
-        }
         newJob.setSkills(skillObjs);
+
+        //query database for employer with findbyid, use optional to handle if none is found, if exists retreive using get() and set on job obj
+        Optional<Employer> optionalEmployer = employerRepository.findById(employerId);
+        if (optionalEmployer.isPresent()) {
+            Employer employer = optionalEmployer.get();
+            newJob.setEmployer(employer);
+        }
 
         // save the new job
         jobRepository.save(newJob);
@@ -105,7 +86,7 @@ public class HomeController {
 
         if (jobResult.isEmpty()) {
             model.addAttribute("errorMsg", "Job not found. Please check the job ID.");
-            return "error";
+            return "view";
         }
 
         //add job to the model and display the view page
