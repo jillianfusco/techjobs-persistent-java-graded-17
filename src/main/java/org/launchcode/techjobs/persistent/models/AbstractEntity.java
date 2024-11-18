@@ -10,11 +10,12 @@ import jakarta.validation.constraints.Size;
 
 import java.util.Objects;
 
-@MappedSuperclass
+@MappedSuperclass //ensures AbstractEntity doesn't have it's own table while allowing its fields and annotations to be inherited. specificaly used for base classes. avoids redudancy while ensuring proper mapping for Employer and Skill
 public abstract class AbstractEntity {
 
-    @GeneratedValue
-    @Id
+    //establish a primary key in subclasses' database tables
+    @GeneratedValue //generates unique primary key values
+    @Id //serves as unique identifier for each record across subclasses
     private int id;
 
     @NotBlank(message = "Name is required.")

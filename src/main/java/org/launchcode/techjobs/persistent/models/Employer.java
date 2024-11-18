@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+@Entity //links clas to DB table. enables Hibernate to perform CRUD operations on class
 public class Employer extends AbstractEntity {
 
     @NotBlank(message = "Name is required.")
@@ -18,7 +18,7 @@ public class Employer extends AbstractEntity {
 
     @OneToMany
     @JoinColumn(name = "employer_id") // specifies the name of the foreign key column in Job table.
-    private List<Job> jobs = new ArrayList<>(); //represent the list of all items in a given job
+    private List<Job> jobs = new ArrayList<>(); //represents collection of Job objects associated with a single employer
 
     public Employer() {}
 

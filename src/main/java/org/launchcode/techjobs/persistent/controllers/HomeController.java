@@ -61,15 +61,25 @@ public class HomeController {
             return "add";
         }
 
-        //from textbook directions
+        //fetch skills from database and associate with job
         List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
         newJob.setSkills(skillObjs);
 
-        //query database for employer with findbyid, use optional to handle if none is found, if exists retrieve using get() and set on job obj
+        //selects employer object chosen by user and associates it with new job
+        //query database for employer with findById, use optional to handle if none is found, if exists retrieve using get() and set on job obj
         Optional<Employer> optionalEmployer = employerRepository.findById(employerId);
         if (optionalEmployer.isPresent()) {
             Employer employer = optionalEmployer.get();
             newJob.setEmployer(employer);
+        }
+
+        //validate skills
+        if (skills == null || skills.isEmpty()) {
+            model.addAttribute("errorMessage", "Please select at least one skill.");
+            model.addAttribute("title", "Add Job");
+            model.addAttribute("employers", employerRepository.findAll());
+            model.addAttribute("skills", skillRepository.findAll());
+            return "add";
         }
 
         // save the new job

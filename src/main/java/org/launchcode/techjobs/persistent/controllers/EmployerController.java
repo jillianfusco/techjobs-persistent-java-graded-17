@@ -16,11 +16,16 @@ import java.util.Optional;
 public class EmployerController {
 
     @Autowired
+    //AutoWired injects EmployerRepository into the controller
+    //& enables Spring to automatically manage the dependency lifecycle ensuring EmployerRepository instance is correctly initialized
     private EmployerRepository employerRepository;
 
-    @GetMapping("")
+
+    @GetMapping("/")
+    //fetches employer data and connects it to view
     public String index(Model model) {
         model.addAttribute("employers", employerRepository.findAll());
+        //findAll() method provided by CrudRepository interface
         return "employers/index";
     }
 
@@ -33,24 +38,27 @@ public class EmployerController {
     @PostMapping("add")
     public String processAddEmployerForm(@ModelAttribute @Valid Employer newEmployer,
                                     Errors errors, Model model) {
+        //@Valid triggers validation annotations @NotBlank and @Size on Employer Object. Validation errors are handled by binding to Model for user feedback
 
         if (errors.hasErrors()) {
             return "employers/add";
         }
 
         employerRepository.save(newEmployer); // saves the valid Employer object to the database
-        return "redirect:";
+        return "redirect:/employers";
     }
 
     //lives at /employers/view/#
     @GetMapping("view/{employerId}")
     public String displayViewEmployer(Model model, @PathVariable int employerId) {
-        Optional<Employer> optEmployer = employerRepository.findById(employerId); // Fetch the employer by ID
+        //employerId is passes as a path variable and retrieved Employer is added to model to populate view
+        Optional<Employer> optEmployer = employerRepository.findById(employerId); //fetch the employer by ID
+        //findById() returns an optional to handle cases where requested Employer may not exist, preventing a NullPointerException
 
-        if (optEmployer.isPresent()) {
-            Employer employer = optEmployer.get(); // get the Employer object if present
+        if (optEmployer.isPresent()) { //isPresent() safely checks if object exists before accessing
+            Employer employer = optEmployer.get(); //get the Employer object if present
             employer.getJobs().size();
-            model.addAttribute("employer", employer); // add the employer to the model
+            model.addAttribute("employer", employer); //add the employer to the model
             return "employers/view"; // render the employers/view template
         } else {
             return "redirect:";

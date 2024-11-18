@@ -9,7 +9,7 @@ import java.util.List;
 @Entity
 public class Job extends AbstractEntity {
 
-    @ManyToOne
+    @ManyToOne //establishes relationship with DB mapping employer_id in the job table to the Employer Table
     private Employer employer;
 
     @ManyToMany
